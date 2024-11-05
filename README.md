@@ -9,5 +9,10 @@ I make it fully flexiable, capable to handle very different kind of data as inpu
 
 also multigranularity data, and multiasset data
 
+-----
+for me
+$ python -m tests.test_generate_mock_data
+
+
 ---
 Made By Wadi Moughanim
