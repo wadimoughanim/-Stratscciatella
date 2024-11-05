@@ -5,25 +5,25 @@
 
 bool CSVDataHandler::load_data(const std::string& source) {
     std::ifstream file(source);
-    if (!file.is_open()) {
+    if (!file.is_open()) { // throw > exception handling throw <expression>;
         throw std::runtime_error("Could not open file: " + source);
         return false;
     }
 
-    std::string line;
+    std::string line; //std > standard lib
     if (!std::getline(file, line)) {
         throw std::runtime_error("CSV file is empty or header missing");
         return false;
-    }
+    } // we read the first line of the file supposed to be the header
 
     // Parse the header to get column names
     std::vector<std::string> columns = parse_header(line);
 
     // Read each row and store the data
     while (std::getline(file, line)) {
-        std::stringstream ss(line);
+        std::stringstream ss(line); // sstream
         std::string date;
-        std::getline(ss, date, ',');
+        std::getline(ss, date, ','); // read first token (, sep) store it to date
 
         std::map<std::string, double> row_data;
         for (const auto& column : columns) {
