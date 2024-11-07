@@ -12,6 +12,7 @@ also multigranularity data, and multiasset data
 -----
 for me
 $ python -m tests.test_generate_mock_data
+rm -rf ./*
 
 
 ---

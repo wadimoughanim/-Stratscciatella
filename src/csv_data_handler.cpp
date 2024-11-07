@@ -1,35 +1,47 @@
 #include "csv_data_handler.h"
-#include <fstream> // fstream > operating on files, sstream > operating on strings, stdexcept > exceptions
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 
 bool CSVDataHandler::load_data(const std::string& source) {
     std::ifstream file(source);
-    if (!file.is_open()) { // throw > exception handling throw <expression>;
+    if (!file.is_open()) {
         throw std::runtime_error("Could not open file: " + source);
         return false;
     }
 
-    std::string line; //std > standard lib
+    std::string line;
     if (!std::getline(file, line)) {
         throw std::runtime_error("CSV file is empty or header missing");
         return false;
-    } // we read the first line of the file supposed to be the header
+    }
 
     // Parse the header to get column names
     std::vector<std::string> columns = parse_header(line);
 
+    // Ensure date is not included in columns to be parsed as double
+    if (!columns.empty() && columns[0] == "date") {
+        columns.erase(columns.begin()); // Remove "date" from columns
+    } else {
+        throw std::runtime_error("Expected 'date' column in header");
+    }
+
     // Read each row and store the data
     while (std::getline(file, line)) {
-        std::stringstream ss(line); // sstream
+        std::stringstream ss(line);
         std::string date;
-        std::getline(ss, date, ','); // read first token (, sep) store it to date
+        std::getline(ss, date, ','); // Read first token as date
 
         std::map<std::string, double> row_data;
         for (const auto& column : columns) {
             std::string value;
             std::getline(ss, value, ',');
-            row_data[column] = std::stod(value); // Convert string to double
+
+            try {
+                row_data[column] = std::stod(value); // Convert string to double
+            } catch (const std::invalid_argument& e) {
+                throw std::runtime_error("Invalid value for double conversion in column '" + column + "': " + value);
+            }
         }
         data_[date] = row_data;
     }
